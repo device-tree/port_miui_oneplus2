@@ -171,9 +171,9 @@ cd ../
 echo "Final Step ..."
 
 if [ ${IMG} = 1 ]; then
-  cp -rf tools/META-INF2 final/META-INF
-else
   cp -rf tools/META-INF final/META-INF
+else
+  cp -rf tools/META-INF2 final/META-INF
 fi
 
 
