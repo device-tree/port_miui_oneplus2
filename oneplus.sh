@@ -152,8 +152,6 @@ sed -i -e "s/ro\.product\.name=.*/ro\.product\.name=tocino/g" output/build.prop
 sed -i -e "s/ro\.product\.brand=.*/ro\.product\.brand=OnePlus/g" output/build.prop
 sed -i -e "s/ro\.build\.description=.*/ro\.build\.description=OnePlus2-user 5.1.1 LMY47V 21 dev-keys/g" output/build.prop
 sed -i -e "s/ro\.build\.fingerprint=.*/ro\.build\.fingerprint=OnePlus\/OnePlus2\/OnePlus2:5.1.1\/LMY47V\/1436933040:user\/release-keys/g" output/build.prop
-rm -rf output/media/theme
-cp -rf /home/nian/patchrom/miui/XXHDPI/system/media/theme output/media/theme 
 
 echo "Tweak build.prop"
 sed -i "/\s*ro.sf.lcd_density.*$/d" output/build.prop
