@@ -186,7 +186,6 @@ cp -rf tools/firmware-update final/
 cp -rf tools/RADIO final/
 cp -rf stockrom/data final/
 rm -rf final/data/miui/app/customized/ota-partner-GooglePinyin-arm64
-cp -rf tools/root final/system/
 
 if [ -d tools/third-app ];then
 	echo "Add Third App ..."
