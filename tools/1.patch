@@ -1,0 +1,480 @@
+From 4ddc5d2f49cf03ec68df2684d5f052ea619ca29d Mon Sep 17 00:00:00 2001
+From: nian0114 <268078545@qq.com>
+Date: Sat, 27 Feb 2016 02:49:58 +0800
+Subject: [PATCH 1/3] drm hack
+
+---
+ miuisystem/smali/miui/drm/DrmManager.smali | 322 +----------------------------
+ 1 file changed, 6 insertions(+), 316 deletions(-)
+
+--- a/miuisystem/smali/miui/drm/DrmManager.smali
++++ b/miuisystem/smali/miui/drm/DrmManager.smali
+@@ -643,22 +643,10 @@
+ .end method
+ 
+ .method public static isLegal(Landroid/content/Context;Ljava/io/File;Ljava/io/File;)Lmiui/drm/DrmManager$DrmResult;
+-    .locals 2
+-    .param p0, "context"    # Landroid/content/Context;
+-    .param p1, "contentFile"    # Ljava/io/File;
+-    .param p2, "rightsFile"    # Ljava/io/File;
+-
+-    .prologue
+-    invoke-static {p1}, Lmiui/util/HashUtils;->getSHA1(Ljava/io/File;)Ljava/lang/String;
+-
+-    move-result-object v0
+-
+-    .local v0, "hash":Ljava/lang/String;
+-    invoke-static {p0, v0, p2}, Lmiui/drm/DrmManager;->isLegal(Landroid/content/Context;Ljava/lang/String;Ljava/io/File;)Lmiui/drm/DrmManager$DrmResult;
+ 
+-    move-result-object v1
++	sget-object v0, Lmiui/drm/DrmManager$DrmResult;->DRM_SUCCESS:Lmiui/drm/DrmManager$DrmResult;
+ 
+-    return-object v1
++	return-object v0
+ .end method
+ 
+ .method public static isLegal(Landroid/content/Context;Ljava/lang/String;Ljava/io/File;)Lmiui/drm/DrmManager$DrmResult;
+@@ -832,247 +820,9 @@
+     .param p2, "ro"    # Lmiui/drm/DrmManager$RightObject;
+ 
+     .prologue
+-    const-wide/16 v10, 0x0
+-
+-    if-nez p2, :cond_0
+-
+-    sget-object v8, Lmiui/drm/DrmManager$DrmResult;->DRM_ERROR_RIGHT_OBJECT_IS_NULL:Lmiui/drm/DrmManager$DrmResult;
+-
+-    :goto_0
+-    return-object v8
+-
+-    :cond_0
+-    iget-wide v8, p2, Lmiui/drm/DrmManager$RightObject;->startTime:J
+-
+-    cmp-long v8, v8, v10
+-
+-    if-ltz v8, :cond_1
+-
+-    iget-wide v8, p2, Lmiui/drm/DrmManager$RightObject;->endTime:J
+-
+-    cmp-long v8, v8, v10
+-
+-    if-gez v8, :cond_2
+-
+-    :cond_1
+-    sget-object v8, Lmiui/drm/DrmManager$DrmResult;->DRM_ERROR_TIME_NOT_MATCH:Lmiui/drm/DrmManager$DrmResult;
+-
+-    goto :goto_0
+-
+-    :cond_2
+-    iget-wide v8, p2, Lmiui/drm/DrmManager$RightObject;->endTime:J
+-
+-    cmp-long v8, v8, v10
+-
+-    if-lez v8, :cond_4
+-
+-    invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
+-
+-    move-result-wide v2
+-
+-    .local v2, "current":J
+-    iget-wide v8, p2, Lmiui/drm/DrmManager$RightObject;->startTime:J
+-
+-    cmp-long v8, v2, v8
+-
+-    if-ltz v8, :cond_3
+-
+-    iget-wide v8, p2, Lmiui/drm/DrmManager$RightObject;->endTime:J
+-
+-    cmp-long v8, v2, v8
+-
+-    if-lez v8, :cond_4
+-
+-    :cond_3
+-    sget-object v8, Lmiui/drm/DrmManager$DrmResult;->DRM_ERROR_TIME_NOT_MATCH:Lmiui/drm/DrmManager$DrmResult;
+-
+-    goto :goto_0
+-
+-    .end local v2    # "current":J
+-    :cond_4
+-    const/4 v5, 0x0
+-
+-    .local v5, "match":Z
+-    iget-object v8, p2, Lmiui/drm/DrmManager$RightObject;->assets:Ljava/util/List;
+-
+-    invoke-interface {v8}, Ljava/util/List;->iterator()Ljava/util/Iterator;
+-
+-    move-result-object v1
+-
+-    .local v1, "i$":Ljava/util/Iterator;
+-    :cond_5
+-    invoke-interface {v1}, Ljava/util/Iterator;->hasNext()Z
+-
+-    move-result v8
+-
+-    if-eqz v8, :cond_6
+-
+-    invoke-interface {v1}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+-
+-    move-result-object v0
+-
+-    check-cast v0, Ljava/lang/String;
+-
+-    .local v0, "asset":Ljava/lang/String;
+-    invoke-virtual {v0, p1}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+-
+-    move-result v8
+-
+-    if-eqz v8, :cond_5
+-
+-    const/4 v5, 0x1
+-
+-    .end local v0    # "asset":Ljava/lang/String;
+-    :cond_6
+-    if-nez v5, :cond_7
+-
+-    const-string v8, "drm"
+-
+-    new-instance v9, Ljava/lang/StringBuilder;
+-
+-    invoke-direct {v9}, Ljava/lang/StringBuilder;-><init>()V
+-
+-    const-string v10, "right object has no definition for asset "
+-
+-    invoke-virtual {v9, v10}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+-
+-    move-result-object v9
+-
+-    invoke-virtual {v9, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+-
+-    move-result-object v9
+-
+-    invoke-virtual {v9}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+-
+-    move-result-object v9
+-
+-    invoke-static {v8, v9}, Lmiui/drm/DrmManager;->exportFatalLog(Ljava/lang/String;Ljava/lang/String;)V
+-
+-    sget-object v8, Lmiui/drm/DrmManager$DrmResult;->DRM_ERROR_ASSET_NOT_MATCH:Lmiui/drm/DrmManager$DrmResult;
+-
+-    goto :goto_0
+-
+-    :cond_7
+-    iget-object v8, p2, Lmiui/drm/DrmManager$RightObject;->imeis:Ljava/util/List;
+-
+-    invoke-interface {v8}, Ljava/util/List;->size()I
+-
+-    move-result v8
+-
+-    if-nez v8, :cond_8
+-
+-    const-string v8, "drm"
+-
+-    const-string v9, "right object does not have any imeis"
+-
+-    invoke-static {v8, v9}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+-
+-    sget-object v8, Lmiui/drm/DrmManager$DrmResult;->DRM_SUCCESS:Lmiui/drm/DrmManager$DrmResult;
+-
+-    goto :goto_0
+-
+-    :cond_8
+-    invoke-static {p0}, Lmiui/drm/DrmManager;->getOriginImei(Landroid/content/Context;)Ljava/lang/String;
+-
+-    move-result-object v7
+-
+-    .local v7, "targetOriginImei":Ljava/lang/String;
+-    invoke-static {p0}, Lmiui/drm/DrmManager;->getEncodedImei(Landroid/content/Context;)Ljava/lang/String;
+-
+-    move-result-object v6
+-
+-    .local v6, "targetEncodedImei":Ljava/lang/String;
+-    invoke-static {v7}, Landroid/text/TextUtils;->isEmpty(Ljava/lang/CharSequence;)Z
+-
+-    move-result v8
+-
+-    if-eqz v8, :cond_c
+-
+-    const-string v8, "drm"
+-
+-    const-string v9, "the imei retrieved is empty"
+-
+-    invoke-static {v8, v9}, Lmiui/drm/DrmManager;->exportFatalLog(Ljava/lang/String;Ljava/lang/String;)V
+-
+-    :cond_9
+-    :goto_1
+-    iget-object v8, p2, Lmiui/drm/DrmManager$RightObject;->imeis:Ljava/util/List;
+-
+-    invoke-interface {v8}, Ljava/util/List;->iterator()Ljava/util/Iterator;
+-
+-    move-result-object v1
+-
+-    :cond_a
+-    invoke-interface {v1}, Ljava/util/Iterator;->hasNext()Z
+-
+-    move-result v8
+-
+-    if-eqz v8, :cond_d
+-
+-    invoke-interface {v1}, Ljava/util/Iterator;->next()Ljava/lang/Object;
+-
+-    move-result-object v4
+-
+-    check-cast v4, Ljava/lang/String;
+-
+-    .local v4, "imei":Ljava/lang/String;
+-    invoke-virtual {v4, v7}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+-
+-    move-result v8
+-
+-    if-nez v8, :cond_b
+-
+-    invoke-virtual {v4, v6}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+-
+-    move-result v8
+-
+-    if-nez v8, :cond_b
+-
+-    const-string v8, "-1"
+-
+-    invoke-virtual {v4, v8}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+-
+-    move-result v8
+-
+-    if-eqz v8, :cond_a
+-
+-    :cond_b
+-    const-string v8, "drm"
+-
+-    const-string v9, "right object has matched imei"
+-
+-    invoke-static {v8, v9}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+-
+-    sget-object v8, Lmiui/drm/DrmManager$DrmResult;->DRM_SUCCESS:Lmiui/drm/DrmManager$DrmResult;
+-
+-    goto/16 :goto_0
+-
+-    .end local v4    # "imei":Ljava/lang/String;
+-    :cond_c
+-    invoke-static {v6}, Landroid/text/TextUtils;->isEmpty(Ljava/lang/CharSequence;)Z
+-
+-    move-result v8
+-
+-    if-eqz v8, :cond_9
+-
+-    const-string v8, "drm"
+-
+-    const-string v9, "the imei encoded is empty"
+-
+-    invoke-static {v8, v9}, Lmiui/drm/DrmManager;->exportFatalLog(Ljava/lang/String;Ljava/lang/String;)V
+-
+-    goto :goto_1
+-
+-    :cond_d
+-    const-string v8, "drm"
+-
+-    const-string v9, "right object does not have matched imei"
+-
+-    invoke-static {v8, v9}, Lmiui/drm/DrmManager;->exportFatalLog(Ljava/lang/String;Ljava/lang/String;)V
+-
+-    sget-object v8, Lmiui/drm/DrmManager$DrmResult;->DRM_ERROR_IMEI_NOT_MATCH:Lmiui/drm/DrmManager$DrmResult;
+-
+-    goto/16 :goto_0
++    
++    sget-object v0, Lmiui/drm/DrmManager$DrmResult;->DRM_SUCCESS:Lmiui/drm/DrmManager$DrmResult;
++    return-object v0
+ .end method
+ 
+ .method public static isPermanentRights(Ljava/io/File;)Z
+@@ -1080,13 +830,7 @@
+     .param p0, "rightsFile"    # Ljava/io/File;
+ 
+     .prologue
+-    invoke-static {p0}, Lmiui/drm/DrmManager;->parseRightsFile(Ljava/io/File;)Lmiui/drm/DrmManager$RightObject;
+-
+-    move-result-object v0
+-
+-    invoke-static {v0}, Lmiui/drm/DrmManager;->isPermanentRights(Lmiui/drm/DrmManager$RightObject;)Z
+-
+-    move-result v0
++    const/4 v0, 0x1
+ 
+     return v0
+ .end method
+@@ -1096,31 +840,11 @@
+     .param p0, "ro"    # Lmiui/drm/DrmManager$RightObject;
+ 
+     .prologue
+-    const-wide/16 v2, 0x0
+-
+-    if-eqz p0, :cond_0
+-
+-    iget-wide v0, p0, Lmiui/drm/DrmManager$RightObject;->startTime:J
+-
+-    cmp-long v0, v0, v2
+-
+-    if-nez v0, :cond_0
+-
+-    iget-wide v0, p0, Lmiui/drm/DrmManager$RightObject;->endTime:J
+-
+-    cmp-long v0, v0, v2
+-
+-    if-nez v0, :cond_0
+ 
+     const/4 v0, 0x1
+ 
+-    :goto_0
+     return v0
+ 
+-    :cond_0
+-    const/4 v0, 0x0
+-
+-    goto :goto_0
+ .end method
+ 
+ .method private static isRightsFileLegal(Ljava/io/File;)Z
+-- 
+1.9.1
+
+
+From 5f795e866daa03952459017e82d83092aada8920 Mon Sep 17 00:00:00 2001
+From: nian0114 <268078545@qq.com>
+Date: Sat, 27 Feb 2016 02:53:14 +0800
+Subject: [PATCH 2/3] theme hack
+
+---
+ .../view/ResourceOperationHandler.smali            | 74 ++--------------------
+ 1 file changed, 4 insertions(+), 70 deletions(-)
+
+--- a/ThemeManager/smali/miui/resourcebrowser/view/ResourceOperationHandler.smali
++++ b/ThemeManager/smali/miui/resourcebrowser/view/ResourceOperationHandler.smali
+@@ -410,11 +410,7 @@
+     .locals 1
+ 
+     .prologue
+-    iget-object v0, p0, Lmiui/resourcebrowser/view/ResourceOperationHandler;->mResource:Lmiui/resourcebrowser/model/Resource;
+-
+-    invoke-virtual {v0}, Lmiui/resourcebrowser/model/Resource;->isProductBought()Z
+-
+-    move-result v0
++    const/4 v0, 0x1
+ 
+     return v0
+ .end method
+@@ -675,7 +671,7 @@
+     .locals 1
+ 
+     .prologue
+-    iget-boolean v0, p0, Lmiui/resourcebrowser/view/ResourceOperationHandler;->mIsLegal:Z
++    const/4 v0, 0x1
+ 
+     return v0
+ .end method
+@@ -731,70 +727,9 @@
+     .locals 2
+ 
+     .prologue
+-    new-instance v0, Ljava/io/File;
+-
+-    iget-object v1, p0, Lmiui/resourcebrowser/view/ResourceOperationHandler;->mResResolver:Lmiui/resourcebrowser/model/ResourceResolver;
+-
+-    invoke-virtual {v1}, Lmiui/resourcebrowser/model/ResourceResolver;->getRightsPath()Ljava/lang/String;
+-
+-    move-result-object v1
+-
+-    invoke-direct {v0, v1}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+-
+-    .local v0, "rightsFile":Ljava/io/File;
+-    invoke-virtual {p0}, Lmiui/resourcebrowser/view/ResourceOperationHandler;->isAuthorizedResource()Z
+-
+-    move-result v1
+-
+-    if-nez v1, :cond_1
+-
+-    invoke-virtual {p0}, Lmiui/resourcebrowser/view/ResourceOperationHandler;->getPrice()I
+-
+-    move-result v1
+-
+-    if-eqz v1, :cond_1
+-
+-    invoke-virtual {p0}, Lmiui/resourcebrowser/view/ResourceOperationHandler;->isLocalResource()Z
+-
+-    move-result v1
+-
+-    if-eqz v1, :cond_0
+-
+-    invoke-virtual {v0}, Ljava/io/File;->exists()Z
+-
+-    move-result v1
+-
+-    if-nez v1, :cond_0
+-
+-    invoke-virtual {p0}, Lmiui/resourcebrowser/view/ResourceOperationHandler;->isTrialable()Z
+-
+-    move-result v1
+-
+-    if-eqz v1, :cond_1
+-
+-    :cond_0
+-    invoke-virtual {v0}, Ljava/io/File;->exists()Z
+-
+-    move-result v1
+-
+-    if-eqz v1, :cond_2
+-
+-    invoke-static {v0}, Lmiui/drm/DrmManager;->isPermanentRights(Ljava/io/File;)Z
+-
+-    move-result v1
+-
+-    if-eqz v1, :cond_2
+-
+-    :cond_1
+-    const/4 v1, 0x1
+-
+-    :goto_0
+-    return v1
+-
+-    :cond_2
+-    const/4 v1, 0x0
++    const/4 v0, 0x1
+ 
+-    goto :goto_0
++    return v0
+ .end method
+ 
+ .method public isPicker()Z
+-- 
+1.9.1
+
+
+From 4c8a1e9db0d421e5edf3c0032c4c9ae8df5aa831 Mon Sep 17 00:00:00 2001
+From: nian0114 <268078545@qq.com>
+Date: Sat, 27 Feb 2016 03:08:29 +0800
+Subject: [PATCH 3/3] fix build error
+
+---
+ miuisystem/smali/miui/drm/DrmManager.smali | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+--- a/miuisystem/smali/miui/drm/DrmManager.smali
++++ b/miuisystem/smali/miui/drm/DrmManager.smali
+@@ -643,10 +643,15 @@
+ .end method
+ 
+ .method public static isLegal(Landroid/content/Context;Ljava/io/File;Ljava/io/File;)Lmiui/drm/DrmManager$DrmResult;
++    .locals 2
++    .param p0, "context"    # Landroid/content/Context;
++    .param p1, "contentFile"    # Ljava/io/File;
++    .param p2, "rightsFile"    # Ljava/io/File;
+ 
+-	sget-object v0, Lmiui/drm/DrmManager$DrmResult;->DRM_SUCCESS:Lmiui/drm/DrmManager$DrmResult;
++    .prologue
++    sget-object v0, Lmiui/drm/DrmManager$DrmResult;->DRM_SUCCESS:Lmiui/drm/DrmManager$DrmResult;
+ 
+-	return-object v0
++    return-object v0
+ .end method
+ 
+ .method public static isLegal(Landroid/content/Context;Ljava/lang/String;Ljava/io/File;)Lmiui/drm/DrmManager$DrmResult;
+-- 
+1.9.1
+

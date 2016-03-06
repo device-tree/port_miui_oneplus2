@@ -1,0 +1,5 @@
+/versions
+/system/*
+!/system/placeholder
+/tools/logs/*
+!/tools/logs/placeholder

@@ -1,0 +1,4 @@
+version=80 (MIUI by Nian / 20160218)
+arch=arm64
+minsdk=22
+maxsdk=22
