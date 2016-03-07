@@ -10,7 +10,7 @@ echo "Start to Build Miui ($DEVICE)"
 if [ -d "workspace" ]; then
 	echo "Cleaning Up..."
 	sudo umount /dev/loop0
-	rm -rf workspace $DEVICE-test-5.1.zip final/*
+	rm -rf workspace $DEVICE-test-5.1.zip final/* workspace2
 fi
 
 mkdir -p workspace/output workspace/app stockrom final/system final/data/app
@@ -88,7 +88,7 @@ fi
 echo "Start Modify APPS  ..."
 cd app
 
-mkdir -p ThemeManager_tmp miuisystem_tmp services_tmp android.policy_tmp
+mkdir -p ThemeManager_tmp miuisystem_tmp services_tmp android.policy_tmp framework-res_tmp
 
 cp -rf ../../tools/apktool* $PWD
 cp -rf ../../tools/git.apply $PWD
@@ -98,6 +98,8 @@ cp -rf ../output/app/ThemeManager/ThemeManager.apk ThemeManager.apk
 cp -rf ../output/app/miuisystem/miuisystem.apk miuisystem.apk
 cp -rf ../output/framework/services.jar services.jar
 cp -rf ../output/framework/android.policy.jar android.policy.jar
+cp -rf ../output/framework/framework-res.apk framework-res.apk
+
 ./apktool d miuisystem.apk &> /dev/null
 ./apktool d ThemeManager.apk &> /dev/null
 ./apktool d services.jar &> /dev/null
@@ -125,6 +127,14 @@ cd miuisystem_tmp
 unzip miuisystem.zip &> /dev/null
 cp -rf ../miuisystem/build/apk/classes.dex classes.dex
 zip -q -r "../../output/app/miuisystem/miuisystem.apk" 'assets' 'META-INF' 'resources.arsc' 'res' 'AndroidManifest.xml' 'classes.dex' &> /dev/null
+cd ..
+
+mv framework-res.apk framework-res_tmp/framework-res.zip
+cd framework-res_tmp
+unzip framework-res.zip &> /dev/null
+cp -rf ../../../tools/framework-res/storage_list.xml res/xml/storage_list.xml
+cp -rf ../../../tools/framework-res/power_profile.xml res/xml/power_profile.xml
+zip -q -r "../../output/framework/framework-res.apk" 'assets' 'META-INF' 'resources.arsc' 'res' 'AndroidManifest.xml' 'classes.dex' &> /dev/null
 cd ..
 
 rm -rf *
@@ -184,6 +194,7 @@ cp -rf tools/firmware-update final/
 cp -rf tools/RADIO final/
 cp -rf stockrom/data final/
 rm -rf final/data/miui/app/customized/ota-partner-GooglePinyin-arm64
+cp -rf tools/root final/
 
 if [ -d tools/third-app ];then
 	echo "Add Third App ..."
@@ -191,7 +202,7 @@ if [ -d tools/third-app ];then
 fi
 
 cd final
-zip -q -r "../$DEVICE-test-5.1.zip" 'boot.img' 'META-INF' 'system.new.dat' 'system.transfer.list' 'system.patch.dat' 'file_contexts' 'firmware-update'  'system'  'data' 'RADIO'
+zip -q -r "../$DEVICE-test-5.1.zip" 'boot.img' 'META-INF' 'system.new.dat' 'system.transfer.list' 'system.patch.dat' 'file_contexts' 'firmware-update'  'system'  'data' 'RADIO' 'root'
 cd ..
 
 sudo umount /dev/loop0
