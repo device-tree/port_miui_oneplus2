@@ -1,5 +1,3 @@
-cd Desktop/c
-
 DEVICE=oneplus;
 
 CPU=arm64;
@@ -88,46 +86,20 @@ fi
 echo "Start Modify APPS  ..."
 cd app
 
-mkdir -p ThemeManager_tmp miuisystem_tmp services_tmp android.policy_tmp framework-res_tmp
+mkdir -p android.policy_tmp framework-res_tmp
 
 cp -rf ../../tools/apktool* $PWD
 cp -rf ../../tools/git.apply $PWD
 cp -rf ../../tools/rmline.sh $PWD
 
-cp -rf ../output/app/ThemeManager/ThemeManager.apk ThemeManager.apk
-cp -rf ../output/app/miuisystem/miuisystem.apk miuisystem.apk
-cp -rf ../output/framework/services.jar services.jar
 cp -rf ../output/framework/android.policy.jar android.policy.jar
 cp -rf ../output/framework/framework-res.apk framework-res.apk
 
-./apktool d miuisystem.apk &> /dev/null
-./apktool d ThemeManager.apk &> /dev/null
-./apktool d services.jar &> /dev/null
 ./apktool d android.policy.jar &> /dev/null
-./git.apply  ../../tools/1.patch
-./git.apply  ../../tools/2.patch
 ./git.apply  ../../tools/3.patch
-./apktool b miuisystem &> /dev/null
-./apktool b ThemeManager &> /dev/null
-./apktool b services.jar.out &> /dev/null
 ./apktool b android.policy.jar.out &> /dev/null
 
-mv services.jar.out/dist/services.jar ../output/framework/
 mv android.policy.jar.out/dist/android.policy.jar ../output/framework/
-
-mv ThemeManager.apk ThemeManager_tmp/ThemeManager.zip
-cd ThemeManager_tmp
-unzip ThemeManager.zip &> /dev/null
-cp -rf ../ThemeManager/build/apk/classes.dex classes.dex
-zip -q -r "../../output/app/ThemeManager/ThemeManager.apk" 'assets' 'META-INF' 'resources.arsc' 'res' 'AndroidManifest.xml' 'classes.dex' &> /dev/null
-cd ..
-
-mv miuisystem.apk miuisystem_tmp/miuisystem.zip
-cd miuisystem_tmp
-unzip miuisystem.zip &> /dev/null
-cp -rf ../miuisystem/build/apk/classes.dex classes.dex
-zip -q -r "../../output/app/miuisystem/miuisystem.apk" 'assets' 'META-INF' 'resources.arsc' 'res' 'AndroidManifest.xml' 'classes.dex' &> /dev/null
-cd ..
 
 mv framework-res.apk framework-res_tmp/framework-res.zip
 cd framework-res_tmp
